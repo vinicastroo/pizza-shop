@@ -1,0 +1,54 @@
+import { useQuery } from '@tanstack/react-query'
+import { Utensils } from 'lucide-react'
+
+import { getMonthOrderAmount } from '@/api/get-month-orders-amount'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+import { MetricCardSketelon } from './metric-card-skeleton'
+
+export function MonthOrdersAmountCard() {
+  const { data: monthOrdersAmount } = useQuery({
+    queryFn: getMonthOrderAmount,
+    queryKey: ['metrics', 'month-orders-amount'],
+  })
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base">Pedidos (mes)</CardTitle>
+
+        <Utensils className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+
+      <CardContent className="space-y-1">
+        {monthOrdersAmount ? (
+          <>
+            <span className="text-2xl font-bold tracking-tight">
+              {monthOrdersAmount.amount.toLocaleString('pt-BR')}
+            </span>
+
+            <p className="text-xs text-muted-foreground">
+              {monthOrdersAmount.diffFromLastMonth >= 0 ? (
+                <>
+                  <span className="text-emerald-500 dark:text-emerald-400">
+                    {monthOrdersAmount.diffFromLastMonth}%{' '}
+                  </span>
+                  em relação ao mes passado
+                </>
+              ) : (
+                <>
+                  <span className="text-rose-500 dark:text-rose-400">
+                    {monthOrdersAmount.diffFromLastMonth}%{' '}
+                  </span>
+                  em relação ao mes passado
+                </>
+              )}
+            </p>
+          </>
+        ) : (
+          <MetricCardSketelon />
+        )}
+      </CardContent>
+    </Card>
+  )
+}
